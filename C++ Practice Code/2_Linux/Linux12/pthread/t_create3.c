@@ -1,0 +1,42 @@
+#include <func.h>
+
+struct foo {
+	int a;
+	int b;
+	int c;
+};
+
+void print_ids(const char* prefix) {
+	printf("%s: pid = %d, ppid = %d, tid=0x%lx\n",
+		   prefix,
+		   getpid(),
+		   getppid(),
+		   pthread_self());
+}
+
+void* start_routine(void* args) {
+	print_ids("new thread");
+	struct foo* x = (struct foo*)args;
+	printf("new thread: x = {%d, %d, %d}\n", 
+		   x->a, x->b, x->c);  // x指向main线程的栈空间
+	return NULL;
+}
+
+
+int main(int argc, char* argv[])
+{
+	print_ids("main thread");
+	// 创建新线程
+	pthread_t tid; // 传出参数，用来接收新线程的ID
+	
+	struct foo x = {1, 2, 3};
+
+	int err = pthread_create(&tid, NULL, start_routine, &x); 
+	if (err) { 
+		error(1, err, "pthread_create");	// pthread: 返回错误码，不会设置errno 
+	}
+	printf("main thread: create a thread 0x%lx\n", tid);
+
+	sleep(2);
+    return 0;   // exit(0): exit会导致进程退出，所有线程都会终止！
+}

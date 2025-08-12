@@ -1,0 +1,23 @@
+#pragma once
+#include <stdbool.h>
+// #include "BST.h"
+
+typedef void* E;
+
+typedef struct {
+	E* elements;
+	int size;
+	int capacity;
+	int front;
+	int rear;  // 下一个元素添加的位置
+} Queue;
+
+// API
+Queue* queue_create(void);
+void queue_destroy(Queue* q);
+
+void queue_push(Queue* q, E val);
+E queue_pop(Queue* q);
+E queue_peek(const Queue* q);
+bool queue_empty(const Queue* q);
+bool queue_full(const Queue* q);
